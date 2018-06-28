@@ -8,35 +8,40 @@ rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
  
 #nginxをインストール
 yum --enablerepo=epel install nginx -y
+
+#nginxの自動起動設定、起動
+systemctl enable nginx
+systemctl start nginx
+systemctl status nginx
  
 #confファイルのサンプルを作成
-cat << EOT > /etc/nginx/conf.d/example.dev.conf
+cat << EOT > /etc/nginx/conf.d/mylaravel.conf
 server {
   listen 80;
-  server_name example.dev;
-  root /var/www/html/example/htdocs;
+  server_name vagrant-test.local.com;
+  root /var/www/html/public;
   index index.php index.html index.htm;
-  charset utf-8;
- 
+
+  # '/'で始まる全てのURIに一致
   location / {
-    index index.html index.htm index.php;
-    if (!-e \$request_filename) {
-      rewrite ^(.+)\$ /index.php?q=\$1 last;
-    }
+    # リクエストURI, /index.phpの順に処理を試みる
+    try_files $uri $uri/ /index.php?$query_string;
   }
  
-  location ~ \.php\$ {
-    fastcgi_pass 127.0.0.1:9000;
+  location ~ \.php$ {
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+    fastcgi_pass unix:/var/run/php-fpm.sock;
     fastcgi_index index.php;
-    fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+
     include fastcgi_params;
   }
 }
 EOT
 #nginxの自動起動設定、起動
-systemctl enable nginx
-systemctl start nginx
-systemctl status nginx
+systemctl reload nginx
  
 #PHP7とPHP-FPMなどその他extensionをインストール
 yum install --enablerepo=epel,remi-php70 php php-mbstring php-pear php-fpm php-mcrypt php-gd php-mysql -y
