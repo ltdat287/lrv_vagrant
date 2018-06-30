@@ -1,3 +1,9 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise "please run 'vagrant plugin install vagrant-vbguest'"
+end
+
 Vagrant.configure(2) do |config|
  
   #CentOS7のboxを指定

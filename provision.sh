@@ -20,7 +20,6 @@ sudo systemctl status nginx
  
 #PHP7とPHP-FPMなどその他extensionをインストール
 yum install --enablerepo=epel,remi-php71 php php-mbstring php-pear php-fpm php-mcrypt php-gd php-mysql -y
-sudo yum install zip unzip php7.1-zip
  
 #PHP-FPMのuserとgroupをnginxに変更
 sed -i 's/user = apache/user = nginx/g' /etc/php-fpm.d/www.conf
@@ -36,7 +35,7 @@ rpm -ivh http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
 yum install mysql-community-server -y
  
 #VagrantではパスワードなしでMySQLのrootユーザのログインを許可したい
-echo skip-grant-tables >> /etc/my.cnf
+sudo echo skip-grant-tables >> /etc/my.cnf
 #MySQLの自動起動設定、起動
 sudo systemctl enable mysqld.service
 sudo systemctl start mysqld.service
@@ -47,11 +46,13 @@ yum install nodejs -y
 yum install npm --enablerepo=epel -y
 # Composer install
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/tmp
-mv /tmp/composer.phar /usr/local/bin/composer
+sudo mv /tmp/composer.phar /usr/local/bin/composer
 ln -s /usr/local/bin/composer /bin
 
 # Install Git
 yum install git -y
+
+sudo yum install zip unzip php7.1-zip
  
 #Vagrantでディレクトリをマウントすると403になるのでSELinuxを停止
 setenforce 0
