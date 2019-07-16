@@ -22,8 +22,8 @@ sudo systemctl status nginx
 yum install --enablerepo=epel,remi-php71 php php-mbstring php-pear php-fpm php-mcrypt php-gd php-mysql -y
  
 #PHP-FPMのuserとgroupをnginxに変更
-sed -i 's/user = apache/user = nginx/g' /etc/php-fpm.d/www.conf
-sed -i 's/group = apache/group = nginx/g' /etc/php-fpm.d/www.conf
+sed -i 's/user = apache/user = vagrant/g' /etc/php-fpm.d/www.conf
+sed -i 's/group = apache/group = vagrant/g' /etc/php-fpm.d/www.conf
  
 #PHP-FPMの自動起動設定、起動
 sudo systemctl enable php-fpm
@@ -52,8 +52,12 @@ ln -s /usr/local/bin/composer /bin
 # Install Git
 yum install git -y
 
-sudo yum install zip unzip php7.1-zip
+sudo yum install zip unzip php7.1-zip -y
  
 #Vagrantでディレクトリをマウントすると403になるのでSELinuxを停止
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
+# Install laravel
+cd /var/www/html/server && composer install
+sudo chmod -R 755 storage/
